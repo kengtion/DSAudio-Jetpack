@@ -1,9 +1,10 @@
 package top.kengtion.dsaudiojetpack.ui.screen
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScrollableTabRow
@@ -11,37 +12,37 @@ import androidx.compose.material.*
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import top.kengtion.dsaudiojetpack.R
 import top.kengtion.dsaudiojetpack.data.ServerConfig
 import top.kengtion.dsaudiojetpack.ui.enums.TabEnum
 import top.kengtion.dsaudiojetpack.ui.theme.DSAudioJetPackTheme
+import top.kengtion.dsaudiojetpack.ui.viewmodel.AlbumViewModel
+import top.kengtion.dsaudiojetpack.ui.viewmodel.BaseTabScreenViewModel
 import top.kengtion.dsaudiojetpack.ui.viewmodel.MainViewModel
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(
     tabContent: List<TabEnum>,
-    currentSection: TabEnum,
     isExpandedScreen: Boolean,
     onTabChange: (TabEnum) -> Unit,
     openDrawer: () -> Unit,
     viewModel: MainViewModel
 ) {
+    var currentSection by remember {
+        mutableStateOf(TabEnum.Album)
+    }
     Scaffold(
         topBar = {
             TopAppBar(title = {
@@ -63,13 +64,47 @@ fun MainScreen(
             Text(text = "drawer")
         }
     ) { innerPadding ->
-        val modifer = Modifier.padding(innerPadding)
-        Column() {
+        Column(modifier = Modifier.padding(innerPadding)) {
             TopBar(
                 tabContent = tabContent,
                 currentSection = currentSection,
-                onTabChange = onTabChange
+                onTabChange = {
+                    currentSection = it
+                    onTabChange(it)
+                }
             )
+            HorizontalPager(pageCount = tabContent.size , userScrollEnabled = false) {
+                when (currentSection) { //TODO more screens
+                    TabEnum.Album -> {
+                        val albumViewModel =
+                            viewModel.getScreenViewModel(TabEnum.Album) as AlbumViewModel
+                        BaseTabScreen(
+                            content = albumViewModel.contentList,
+                            onTabClick = { albumViewModel.onTabClick(it) })
+                    }
+                    TabEnum.Artist -> {
+                        val albumViewModel =
+                            viewModel.getScreenViewModel(TabEnum.Album) as AlbumViewModel
+                        BaseTabScreen(
+                            content = albumViewModel.contentList,
+                            onTabClick = { albumViewModel.onTabClick(it) })
+                    }
+                    TabEnum.Style -> {
+                        val albumViewModel =
+                            viewModel.getScreenViewModel(TabEnum.Album) as AlbumViewModel
+                        BaseTabScreen(
+                            content = albumViewModel.contentList,
+                            onTabClick = { albumViewModel.onTabClick(it) })
+                    }
+                    TabEnum.PlayList -> {
+                        val albumViewModel =
+                            viewModel.getScreenViewModel(TabEnum.Album) as AlbumViewModel
+                        BaseTabScreen(
+                            content = albumViewModel.contentList,
+                            onTabClick = { albumViewModel.onTabClick(it) })
+                    }
+                }
+            }
             Text(text = "content")
         }
 
@@ -99,7 +134,9 @@ fun BottomPlayer(
                     contentScale = ContentScale.FillBounds
                 )
                 Column(
-                    modifier = Modifier.padding(start = 10.dp).width(260.dp),
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .width(260.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
@@ -216,21 +253,13 @@ fun DefaultPreview() {
             cookieId = null
         )
     )
-    val tabList = listOf(TabEnum.Album, TabEnum.Artist, TabEnum.Style , TabEnum.PlayList)
+    val tabList = listOf(TabEnum.Album, TabEnum.Artist, TabEnum.Style, TabEnum.PlayList)
     DSAudioJetPackTheme {
         MainScreen(
-            tabContent = tabList, currentSection = TabEnum.Album,
+            tabContent = tabList,
             isExpandedScreen = false,
-            onTabChange = object : (TabEnum) -> Unit {
-                override fun invoke(p1: TabEnum) {
-
-                }
-            },
-            openDrawer = object : () -> Unit {
-                override fun invoke() {
-
-                }
-            },
+            onTabChange = {},
+            openDrawer = {},
             viewModel = viewModel
         )
     }
