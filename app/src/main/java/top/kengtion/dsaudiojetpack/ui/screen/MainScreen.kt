@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import top.kengtion.dsaudiojetpack.R
 import top.kengtion.dsaudiojetpack.data.ServerConfig
 import top.kengtion.dsaudiojetpack.ui.enums.TabEnum
+import top.kengtion.dsaudiojetpack.ui.state.Song
 import top.kengtion.dsaudiojetpack.ui.theme.DSAudioJetPackTheme
 import top.kengtion.dsaudiojetpack.ui.viewmodel.AlbumViewModel
 import top.kengtion.dsaudiojetpack.ui.viewmodel.BaseTabScreenViewModel
@@ -73,7 +74,7 @@ fun MainScreen(
                     onTabChange(it)
                 }
             )
-            HorizontalPager(pageCount = tabContent.size , userScrollEnabled = false) {
+            HorizontalPager(pageCount = tabContent.size, userScrollEnabled = false) {
                 when (currentSection) { //TODO more screens
                     TabEnum.Album -> {
                         val albumViewModel =
@@ -140,10 +141,15 @@ fun BottomPlayer(
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        style = TextStyle(fontSize = 22.sp),
+                        style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.onPrimary,
                         text = curPlaying?.name ?: ""
                     )
-                    Text(curPlaying?.albumName ?: "")
+                    Text(
+                        style = MaterialTheme.typography.subtitle1,
+                        color = MaterialTheme.colors.onPrimary,
+                        text = "${curPlaying?.artist?:""} ${album?.name?:""}"
+                    )
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
@@ -252,6 +258,15 @@ fun DefaultPreview() {
             "password",
             cookieId = null
         )
+    )
+    viewModel.uiState.curPlaying = Song(
+        "",
+        "追梦赤子心",
+        "GALA",
+        123,
+        "追梦赤子心",
+        5,
+        null
     )
     val tabList = listOf(TabEnum.Album, TabEnum.Artist, TabEnum.Style, TabEnum.PlayList)
     DSAudioJetPackTheme {

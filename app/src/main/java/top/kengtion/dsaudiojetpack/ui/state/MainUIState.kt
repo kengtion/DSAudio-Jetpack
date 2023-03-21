@@ -5,7 +5,7 @@ import top.kengtion.dsaudiojetpack.ui.enums.TabEnum
 
 data class MainUIState(
     val curTab: TabEnum,
-    val curPlaying: Song?,
+    var curPlaying: Song?,
     var serverInfo: ServerConfig,
     var isPlaying: Boolean,
     val serverList: MutableList<ServerConfig>
