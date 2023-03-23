@@ -1,9 +1,9 @@
 package top.kengtion.dsaudiojetpack.data
 
 data class ServerConfig(
-    val domain: String,
-    val userName: String,
-    val userPwd: String,
+    var domain: String,
+    var userName: String,
+    var userPwd: String,
     var cookieId: String?
 ) {
 }
