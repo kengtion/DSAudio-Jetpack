@@ -63,5 +63,5 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'io.coil-kt:coil-compose:2.0.0-rc03'
     implementation 'com.github.MohammadSianaki:Retrofit2-Flow-Call-Adapter:+'
-
+    implementation "androidx.navigation:navigation-compose:$nav_version"
 }

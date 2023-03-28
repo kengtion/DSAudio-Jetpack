@@ -23,6 +23,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import top.kengtion.dsaudiojetpack.R
 import top.kengtion.dsaudiojetpack.data.ServerConfig
 import top.kengtion.dsaudiojetpack.ui.enums.TabEnum
@@ -40,7 +43,8 @@ fun MainScreen(
     isExpandedScreen: Boolean,
     onTabChange: (TabEnum) -> Unit,
     openDrawer: () -> Unit,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    onNavigateToConfig: (ServerConfig?) -> Unit
 ) {
     var currentSection by remember {
         mutableStateOf(TabEnum.Album)
@@ -52,7 +56,8 @@ fun MainScreen(
                     serverInfo = viewModel.uiState.serverInfo,
                     serverList = viewModel.uiState.serverList,
                     onSearchClick = {},
-                    onSettingClick = {})
+                    onSettingClick = {},
+                    onServerConfigClick = { onNavigateToConfig(it) })
             }, navigationIcon = {
                 IconButton(onClick = { /*TODO*/ }) {
                     Icon(Icons.Filled.Menu, contentDescription = null)
@@ -195,7 +200,8 @@ fun TitleBar(
     serverInfo: ServerConfig,
     serverList: List<ServerConfig>,
     onSearchClick: () -> Unit,
-    onSettingClick: () -> Unit
+    onSettingClick: () -> Unit,
+    onServerConfigClick: (ServerConfig) -> Unit
 ) {
     var dropDownMenu by remember { mutableStateOf(false) }
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
@@ -211,7 +217,7 @@ fun TitleBar(
             Text(serverInfo.domain)
             DropdownMenu(expanded = dropDownMenu, onDismissRequest = { dropDownMenu = false }) {
                 serverList.forEach {
-                    DropdownMenuItem(onClick = { /*TODO*/ }) {
+                    DropdownMenuItem(onClick = { onServerConfigClick(it) }) {
                         Text(it.domain)
                     }
                 }
@@ -276,12 +282,6 @@ fun DefaultPreview() {
     )
     val tabList = listOf(TabEnum.Album, TabEnum.Artist, TabEnum.Style, TabEnum.PlayList)
     DSAudioJetPackTheme {
-        MainScreen(
-            tabContent = tabList,
-            isExpandedScreen = false,
-            onTabChange = {},
-            openDrawer = {},
-            viewModel = viewModel
-        )
+
     }
 }
