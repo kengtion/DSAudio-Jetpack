@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import top.kengtion.dsaudiojetpack.R
 import top.kengtion.dsaudiojetpack.data.ServerConfig
 import top.kengtion.dsaudiojetpack.ui.enums.TabEnum
+import top.kengtion.dsaudiojetpack.ui.state.Album
 import top.kengtion.dsaudiojetpack.ui.state.Song
 import top.kengtion.dsaudiojetpack.ui.theme.DSAudioJetPackTheme
 import top.kengtion.dsaudiojetpack.ui.viewmodel.AlbumViewModel
@@ -59,7 +60,13 @@ fun MainScreen(
             })
         },
         bottomBar = {
-            BottomPlayer(viewModel = viewModel)
+            BottomPlayer(
+                curPlaying = viewModel.uiState.curPlaying,
+                playing = viewModel.uiState.isPlaying,
+                album = viewModel.findAlbumById(viewModel.uiState.curPlaying?.albumId ?: -1L),
+                onNextClick = { viewModel.onNextClick() },
+                onPauseClick = { viewModel.onPauseClick() }
+            )
         },
         drawerContent = {
             Text(text = "drawer")
@@ -114,12 +121,12 @@ fun MainScreen(
 
 @Composable
 fun BottomPlayer(
-    viewModel: MainViewModel
+    playing: Boolean,
+    album: Album?,
+    curPlaying: Song?,
+    onPauseClick: () -> Unit,
+    onNextClick: () -> Unit
 ) {
-    var playing by remember { mutableStateOf(false) }
-    val album =
-        if (viewModel.uiState.curPlaying != null) viewModel.findAlbumById(viewModel.uiState.curPlaying!!.albumId) else null
-    val curPlaying = viewModel.uiState.curPlaying
     BottomAppBar(modifier = Modifier
         .height(80.dp),
         content = {
@@ -148,7 +155,7 @@ fun BottomPlayer(
                     Text(
                         style = MaterialTheme.typography.subtitle1,
                         color = MaterialTheme.colors.onPrimary,
-                        text = "${curPlaying?.artist?:""} ${album?.name?:""}"
+                        text = "${curPlaying?.artist ?: ""} ${album?.name ?: ""}"
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
@@ -157,8 +164,7 @@ fun BottomPlayer(
                         .height(30.dp)
                         .width(30.dp),
                     onClick = {
-                        playing = !playing
-                        viewModel.onPauseClick()
+                        onPauseClick()
                     }
 
                 ) {
@@ -169,7 +175,7 @@ fun BottomPlayer(
                 }
                 Spacer(modifier = Modifier.width(20.dp))
                 IconButton(
-                    onClick = { viewModel.onNextClick() },
+                    onClick = { onNextClick() },
                     modifier = Modifier
                         .height(30.dp)
                         .width(30.dp),

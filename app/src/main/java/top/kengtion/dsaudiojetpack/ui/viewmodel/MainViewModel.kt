@@ -24,7 +24,7 @@ class MainViewModel : ViewModel() {
             TabEnum.Album,
             null,
             ServerConfig("", "", "", null),
-            true,
+            false,
             mutableListOf<ServerConfig>()
         )
     )
